@@ -108,8 +108,7 @@ export function LoanApplication({
           <div className='bg-green-50 p-4 rounded-lg'>
             <h3 className='font-semibold text-green-800 mb-2'>Loan Terms</h3>
             <ul className='text-sm text-gray-600 list-disc pl-5 space-y-1'>
-              <li>Maximum loan amount: 3× your total contributions</li>
-              <li>Interest rate: 5% flat rate</li>
+              <li>5% interest rate on the principal amount</li>
               <li>Repayment period: 6 months</li>
               <li className='text-red-500 font-semibold'>
                 Defaulting will result in blacklisting from future loans
@@ -130,9 +129,13 @@ export function LoanApplication({
           }}
           disabled={pinError || confirmationPin.length !== 6 || isLoading}
           className='w-full bg-green-600 hover:bg-green-700 py-6 text-base disabled:bg-gray-700 disabled:cursor-not-allowed'>
-          {isLoading ? <div className="flex items-center justify-center gap-2">
-            <Minus className="animate-spin w-4 h-4"/> Processing...
-          </div> : `Apply for ₦${loanAmount.toLocaleString()}`}
+          {isLoading ? (
+            <div className='flex items-center justify-center gap-2'>
+              <Minus className='animate-spin w-4 h-4' /> Processing...
+            </div>
+          ) : (
+            `Apply for ₦${loanAmount.toLocaleString()}`
+          )}
         </Button>
       </CardFooter>
     </Card>

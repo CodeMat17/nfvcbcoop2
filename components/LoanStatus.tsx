@@ -8,7 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Progress } from "@/components/ui/progress";
+// import { Progress } from "@/components/ui/progress";
 import { Clock, CheckCircle } from "lucide-react";
 import { LoanProgress } from "./types";
 
@@ -28,9 +28,9 @@ export function LoanStatus({
   progress,
 }: LoanStatusProps) {
   const accountDetails = {
-    bankName: "NFVCB Cooperative Bank",
-    accountNumber: "1234567890",
-    accountName: "NFVCB Cooperative Society",
+    bankName: "Zenith Bank",
+    accountNumber: "1229203111",
+    accountName: "NFVCB STAFF CO SOC LTD",
   };
 
   const formatDate = (dateString?: string) => {
@@ -140,7 +140,7 @@ export function LoanStatus({
                 </div>
               </div>
               <div>
-                <div className='mb-3 flex justify-between'>
+                {/* <div className='mb-3 flex justify-between'>
                   <span className='text-gray-600'>Repayment Progress</span>
                   <span className='font-semibold'>
                     {Math.round(progress.progressPercentage)}%
@@ -149,7 +149,7 @@ export function LoanStatus({
                 <Progress
                   value={progress.progressPercentage}
                   className='h-4 bg-green-100'
-                />
+                /> */}
 
                 <div className='mt-6'>
                   <h4 className='font-semibold text-green-800 mb-2'>
@@ -160,7 +160,7 @@ export function LoanStatus({
                     <p>Account Number: {accountDetails.accountNumber}</p>
                     <p>Account Name: {accountDetails.accountName}</p>
                     <p className='mt-3 text-sm text-red-600 font-medium'>
-                      Please use your membership ID as payment reference
+                      Please remember to add the 5% interest during repayment.
                     </p>
                   </div>
                 </div>
