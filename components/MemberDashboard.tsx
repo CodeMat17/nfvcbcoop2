@@ -25,13 +25,13 @@ export function MemberDashboard({ member }: MemberDashboardProps) {
           <div className='grid grid-cols-2 gap-4 mt-6'>
             <div className='bg-green-50 p-4 rounded-lg'>
               <p className='text-gray-500'>Total Contribution</p>
-              <p className='font-bold text-2xl'>
+              <p className='font-bold text-xl sm:text-2xl'>
                 ₦{member.totalContribution.toLocaleString()}
               </p>
             </div>
             <div className='bg-green-50 p-4 rounded-lg'>
               <p className='text-gray-500'>Monthly Contribution</p>
-              <p className='font-bold text-2xl'>
+              <p className='font-bold text-xl sm:text-2xl'>
                 ₦{member.monthlyContribution.toLocaleString()}
               </p>
             </div>
