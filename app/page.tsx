@@ -142,7 +142,7 @@ export default function NFVCBCooperativeApp() {
       <div className='container mx-auto px-4 py-12'>
         <header className='text-center mb-12'>
           <h1 className='text-4xl font-bold text-green-800'>
-            NFVCB Cooperative
+            NFVCB Cooperative <br /> <span className="font-medium text-2xl">(Quick Loan)</span>
           </h1>
           <p className='text-green-600 mt-2'>
             Financial Empowerment for Members
