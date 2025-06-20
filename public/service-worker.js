@@ -1,23 +1,26 @@
-const CACHE_NAME = "my-pwa-cache-v1";
+const CACHE_NAME = "my-pwa-cache-v2";
 const OFFLINE_URL = "/offline.html";
 
-const STATIC_ASSETS = [
+// Static assets to pre-cache on install
+const PRECACHE_ASSETS = [
   "/",
-  "/offline.html",
+  OFFLINE_URL,
   "/manifest.json",
   "/icons/icon-192x192.png",
   "/icons/icon-512x512.png",
 ];
 
-// Install
+// Install: Pre-cache essential assets
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(STATIC_ASSETS))
+    caches.open(CACHE_NAME).then((cache) => {
+      return cache.addAll(PRECACHE_ASSETS);
+    })
   );
   self.skipWaiting();
 });
 
-// Activate
+// Activate: Clean old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
     caches.keys().then((names) =>
@@ -31,11 +34,36 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Navigation fallback
+// Fetch: Stale-While-Revalidate Strategy
 self.addEventListener("fetch", (event) => {
-  if (event.request.mode === "navigate") {
-    event.respondWith(
-      fetch(event.request).catch(() => caches.match(OFFLINE_URL))
-    );
+  if (event.request.method !== "GET") return;
+
+  const { request } = event;
+
+  // For navigations, show offline fallback
+  if (request.mode === "navigate") {
+    event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
+    return;
   }
+
+  // For assets: stale-while-revalidate strategy
+  event.respondWith(
+    caches.open(CACHE_NAME).then(async (cache) => {
+      const cachedResponse = await cache.match(request);
+      const fetchPromise = fetch(request)
+        .then((networkResponse) => {
+          if (networkResponse && networkResponse.status === 200) {
+            cache.put(request, networkResponse.clone());
+          }
+          return networkResponse;
+        })
+        .catch(() => {
+          // return cached asset if fetch fails
+          return cachedResponse;
+        });
+
+      // Return cached if available, else wait for network
+      return cachedResponse || fetchPromise;
+    })
+  );
 });
