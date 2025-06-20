@@ -1,32 +1,35 @@
-const CACHE_NAME = "my-pwa-cache-v2";
+const CACHE_NAME = "nfvcb-coop-pwa-v1";
 const OFFLINE_URL = "/offline.html";
 
-// Static assets to pre-cache on install
-const PRECACHE_ASSETS = [
-  "/",
-  OFFLINE_URL,
-  "/manifest.json",
-  "/icons/icon-192x192.png",
-  "/icons/icon-512x512.png",
-];
+// Challenge & dynamic routes to bypass
+const BLOCKED_PATHS = ["/cdn-cgi/", "/verify", "/challenge"];
 
-// Install: Pre-cache essential assets
+// Install: cache core assets
 self.addEventListener("install", (event) => {
   event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(PRECACHE_ASSETS);
-    })
+    caches
+      .open(CACHE_NAME)
+      .then((cache) =>
+        cache.addAll([
+          "/",
+          OFFLINE_URL,
+          "/favicon.ico",
+          "/icons/icon-192x192.png",
+          "/icons/icon-512x512.png",
+          "/manifest.json",
+        ])
+      )
   );
   self.skipWaiting();
 });
 
-// Activate: Clean old caches
+// Activate: clean up old caches
 self.addEventListener("activate", (event) => {
   event.waitUntil(
-    caches.keys().then((names) =>
+    caches.keys().then((keys) =>
       Promise.all(
-        names.map((name) => {
-          if (name !== CACHE_NAME) return caches.delete(name);
+        keys.map((key) => {
+          if (key !== CACHE_NAME) return caches.delete(key);
         })
       )
     )
@@ -34,36 +37,42 @@ self.addEventListener("activate", (event) => {
   self.clients.claim();
 });
 
-// Fetch: Stale-While-Revalidate Strategy
+// Fetch: smart cache strategy
 self.addEventListener("fetch", (event) => {
-  if (event.request.method !== "GET") return;
-
   const { request } = event;
 
-  // For navigations, show offline fallback
+  // Only handle GET requests
+  if (request.method !== "GET") return;
+
+  const url = new URL(request.url);
+
+  // Bypass challenge or dynamic paths
+  if (BLOCKED_PATHS.some((path) => url.pathname.startsWith(path))) {
+    return;
+  }
+
+  // Handle navigation to offline fallback
   if (request.mode === "navigate") {
     event.respondWith(fetch(request).catch(() => caches.match(OFFLINE_URL)));
     return;
   }
 
-  // For assets: stale-while-revalidate strategy
+  // Respond with cache, fallback to network
   event.respondWith(
-    caches.open(CACHE_NAME).then(async (cache) => {
-      const cachedResponse = await cache.match(request);
-      const fetchPromise = fetch(request)
-        .then((networkResponse) => {
-          if (networkResponse && networkResponse.status === 200) {
-            cache.put(request, networkResponse.clone());
-          }
-          return networkResponse;
-        })
-        .catch(() => {
-          // return cached asset if fetch fails
-          return cachedResponse;
-        });
-
-      // Return cached if available, else wait for network
-      return cachedResponse || fetchPromise;
-    })
+    caches
+      .match(request)
+      .then((cached) => {
+        return (
+          cached ||
+          fetch(request).then((res) => {
+            // Clone and cache response
+            return caches.open(CACHE_NAME).then((cache) => {
+              cache.put(request, res.clone());
+              return res;
+            });
+          })
+        );
+      })
+      .catch(() => caches.match(OFFLINE_URL))
   );
 });
