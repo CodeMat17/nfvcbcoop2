@@ -4,8 +4,9 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ConvexClientProvider } from "./ConvexClientProvider";
 import "./globals.css";
+import PWAInstaller from "@/components/PWAInstaller";
 
-const APP_NAME = "NFVCB Cooperative";
+const APP_NAME = 'NFVCB Cooperative';
 const APP_DEFAULT_TITLE = "NFVCB Coop";
 const APP_TITLE_TEMPLATE = "%s - NFVCB Coop";
 const APP_DESCRIPTION = "Financial Empowerment for Members";
@@ -21,17 +22,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  applicationName: APP_NAME,
-  title: {
-    default: APP_DEFAULT_TITLE,
-    template: APP_TITLE_TEMPLATE,
-  },
-  description: APP_DESCRIPTION,
+  title: "NFVCB Cooperative",
+  description: "Financial Empowerment for Members",
   manifest: "/manifest.json",
 
   icons: {
-    icon: "/icons/icon-192.png",
-    apple: "/icons/icon-192.png",
+    icon: "/icons/icon-192x192.png",
+    apple: "/icons/icon-192x192.png",
   },
   appleWebApp: {
     capable: true,
@@ -73,6 +70,7 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
         <ConvexClientProvider>
+          <PWAInstaller />
           <PWAInstallPrompt />
           {children}
         </ConvexClientProvider>
