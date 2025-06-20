@@ -60,6 +60,7 @@ export function LoanHistory({ loans }: { loans: Loan[] }) {
         <CardTitle className='text-green-800'>Loan History</CardTitle>
       </CardHeader>
       <CardContent>
+     
         <Table>
           <TableHeader>
             <TableRow>

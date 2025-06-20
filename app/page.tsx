@@ -5,6 +5,12 @@ import { LoanHistory } from "@/components/LoanHistory";
 import { LoanStatus } from "@/components/LoanStatus";
 import { LoginForm } from "@/components/LoginForm";
 import { MemberDashboard } from "@/components/MemberDashboard";
+import {
+  Card,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
 import { api } from "@/convex/_generated/api";
 import { Id } from "@/convex/_generated/dataModel";
 import { useMutation, useQuery } from "convex/react";
@@ -119,7 +125,6 @@ export default function NFVCBCooperativeApp() {
         <Toaster position='top-center' richColors />
         <div className='w-full max-w-lg mx-auto px-4 py-12'>
           <div className='w-full py-12'>
-          
             <LoginForm onVerify={handleLogin} />
           </div>
         </div>
@@ -142,7 +147,8 @@ export default function NFVCBCooperativeApp() {
       <div className='container mx-auto px-4 py-12'>
         <header className='text-center mb-12'>
           <h1 className='text-4xl font-bold text-green-800'>
-            NFVCB Cooperative <br /> <span className="font-medium text-2xl">(Quick Loan)</span>
+            NFVCB Cooperative <br />{" "}
+            <span className='font-medium text-2xl'>(Quick Loan)</span>
           </h1>
           <p className='text-green-600 mt-2'>
             Financial Empowerment for Members
@@ -180,7 +186,16 @@ export default function NFVCBCooperativeApp() {
             </div>
           )}
 
-          {history && history.length > 0 && <LoanHistory loans={history} />}
+          {history && history.length > 0 ? (
+            <LoanHistory loans={history} />
+          ) : (
+            <Card>
+              <CardHeader>
+                <CardTitle>Loan History</CardTitle>
+                <CardDescription>No loan history found.</CardDescription>
+              </CardHeader>
+            </Card>
+          )}
         </div>
       </div>
     </div>
