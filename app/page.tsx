@@ -117,8 +117,11 @@ export default function NFVCBCooperativeApp() {
     return (
       <div className='min-h-screen bg-gradient-to-br from-green-50 to-white'>
         <Toaster position='top-center' richColors />
-        <div className='container mx-auto px-4 py-12 flex items-center justify-center min-h-screen'>
-          <LoginForm onVerify={handleLogin} />
+        <div className='w-full max-w-lg mx-auto px-4 py-12'>
+          <div className='w-full py-12'>
+          
+            <LoginForm onVerify={handleLogin} />
+          </div>
         </div>
       </div>
     );
@@ -151,7 +154,10 @@ export default function NFVCBCooperativeApp() {
 
           {member && (
             <div>
-              {(!loan || loan.status === 'cleared' || (loan.status !== 'processing' && loan.status !== 'approved')) && (
+              {(!loan ||
+                loan.status === "cleared" ||
+                (loan.status !== "processing" &&
+                  loan.status !== "approved")) && (
                 <LoanApplication
                   member={member}
                   loanAmount={loanAmount}
@@ -160,18 +166,17 @@ export default function NFVCBCooperativeApp() {
                 />
               )}
 
-                {loan && (
-                  <LoanStatus
-                    status={loan.status}
-                    amount={loan.amount}
-                    dateApplied={loan.dateApplied}
-                    approvedDate={loan.approvedDate}
-                    dueDate={loan.dueDate}
-                    progress={loanProgress}
-                    onNewLoan={() => router.refresh()}
-                  />
-                )}
-            
+              {loan && (
+                <LoanStatus
+                  status={loan.status}
+                  amount={loan.amount}
+                  dateApplied={loan.dateApplied}
+                  approvedDate={loan.approvedDate}
+                  dueDate={loan.dueDate}
+                  progress={loanProgress}
+                  onNewLoan={() => router.refresh()}
+                />
+              )}
             </div>
           )}
 

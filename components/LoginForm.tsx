@@ -60,7 +60,7 @@ export function LoginForm({ onVerify }: LoginFormProps) {
   };
 
   return (
-    <Card className='bg-white shadow-lg max-w-md w-full'>
+    <Card className='bg-white shadow-lg w-full max-w-md mx-auto'>
       <CardHeader className='flex flex-col items-center'>
         <div className='flex flex-col items-center mb-6'>
           <div className='relative rounded-xl w-16 h-16 mb-3'>
