@@ -2,6 +2,7 @@
 
 import { Card, CardContent } from "@/components/ui/card";
 import { Member } from "./types";
+import dayjs from "dayjs";
 
 interface MemberDashboardProps {
   member: Member;
@@ -20,7 +21,7 @@ export function MemberDashboard({ member }: MemberDashboardProps) {
           </div>
           <div>
             <p className='text-gray-500'>Date Joined</p>
-            <p className='font-semibold'>{member.dateJoined}</p>
+            <p className='font-semibold'>{dayjs(member.dateJoined).format("MMM YYYY")}</p>
           </div>
           <div className='grid grid-cols-2 gap-4 mt-6'>
             <div className='bg-green-50 p-4 rounded-lg'>

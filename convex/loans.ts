@@ -1,7 +1,6 @@
 import { v } from "convex/values";
 import { mutation, query } from "./_generated/server";
 
-// Apply for new loan
 export const applyForLoan = mutation({
   args: {
     userId: v.id("users"),
@@ -39,19 +38,36 @@ export const applyForLoan = mutation({
   },
 });
 
-// Get all loans for a user
-export const getUserLoans = query({
-  args: { userId: v.id("users") },
-  handler: async (ctx, { userId }) => {
-    return await ctx.db
-      .query("loans")
-      .withIndex("by_userId", (q) => q.eq("userId", userId))
-      .order("desc")
-      .collect();
+export const approveLoan = mutation({
+  args: {
+    loanId: v.id("loans"),
+    adminName: v.string(),
+  },
+  handler: async (ctx, { loanId, adminName }) => {
+    const approvalDate = new Date().toISOString();
+    const dueDate = new Date();
+    dueDate.setMonth(dueDate.getMonth() + 6); // 6 months term
+
+    await ctx.db.patch(loanId, {
+      status: "approved",
+      approvedDate: approvalDate,
+      dueDate: dueDate.toISOString(),
+      approvedBy: adminName,
+    });
   },
 });
 
-// Get active loan (approved or processing)
+export const clearLoan = mutation({
+  args: {
+    loanId: v.id("loans"),
+  },
+  handler: async (ctx, { loanId }) => {
+    await ctx.db.patch(loanId, {
+      status: "cleared",
+    });
+  },
+});
+
 export const getActiveLoan = query({
   args: { userId: v.id("users") },
   handler: async (ctx, { userId }) => {
@@ -73,46 +89,6 @@ export const getLatestLoan = query({
       .order("desc")
       .take(1)
       .then((loans) => loans[0] ?? null);
-  },
-});
-
-// Admin: Approve a loan
-export const approveLoan = mutation({
-  args: {
-    loanId: v.id("loans"),
-    adminName: v.string(),
-  },
-  handler: async (ctx, { loanId, adminName }) => {
-    const approvalDate = new Date().toISOString();
-    const dueDate = new Date();
-    dueDate.setMonth(dueDate.getMonth() + 6); // 6 months term
-
-    await ctx.db.patch(loanId, {
-      status: "approved",
-      approvedDate: approvalDate,
-      dueDate: dueDate.toISOString(),
-      approvedBy: adminName,
-    });
-  },
-});
-
-export const rejectLoan = mutation({
-  args: {
-    loanId: v.id("loans"),
-  },
-  handler: async (ctx, { loanId }) => {
-    await ctx.db.delete(loanId);
-  },
-});
-
-export const clearLoan = mutation({
-  args: {
-    loanId: v.id("loans"),
-  },
-  handler: async (ctx, { loanId }) => {
-    await ctx.db.patch(loanId, {
-      status: "cleared",
-    });
   },
 });
 
@@ -144,5 +120,25 @@ export const getLoansByStatus = query({
       ...loans,
       userName: usersMap.get(loans.userId) ?? null,
     }));
+  },
+});
+
+export const getUserLoans = query({
+  args: { userId: v.id("users") },
+  handler: async (ctx, { userId }) => {
+    return await ctx.db
+      .query("loans")
+      .withIndex("by_userId", (q) => q.eq("userId", userId))
+      .order("desc")
+      .collect();
+  },
+});
+
+export const rejectLoan = mutation({
+  args: {
+    loanId: v.id("loans"),
+  },
+  handler: async (ctx, { loanId }) => {
+    await ctx.db.delete(loanId);
   },
 });
