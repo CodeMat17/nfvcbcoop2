@@ -13,6 +13,7 @@ import type {
   FilterApi,
   FunctionReference,
 } from "convex/server";
+import type * as coreLoans from "../coreLoans.js";
 import type * as loans from "../loans.js";
 import type * as users from "../users.js";
 
@@ -25,6 +26,7 @@ import type * as users from "../users.js";
  * ```
  */
 declare const fullApi: ApiFromModules<{
+  coreLoans: typeof coreLoans;
   loans: typeof loans;
   users: typeof users;
 }>;

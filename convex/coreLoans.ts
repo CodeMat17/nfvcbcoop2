@@ -25,9 +25,9 @@ export const createCoreLoan = mutation({
       status: "pending",
     });
 
-    // Update the user's status to 'pending'
+    // Mark user as having a core loan application in progress
     await ctx.db.patch(args.userId, {
-      status: "pending",
+      coreLoan: "yes",
     });
 
     // Return both the loan ID and updated user data
@@ -48,14 +48,14 @@ export const getCoreLoans = query({
     status: v.optional(v.union(v.literal("pending"), v.literal("done"))),
   },
   handler: async (ctx, args) => {
-    let query = ctx.db.query("coreLoans");
+    let loansQuery = ctx.db.query("coreLoans");
 
     if (args.status) {
-      query = query.filter((q) => q.eq(q.field("status"), args.status));
+      loansQuery = loansQuery.filter((q) => q.eq(q.field("status"), args.status));
     }
 
     // Execute query and get loans
-    const loans = await query.collect();
+    const loans = await loansQuery.collect();
 
     return loans;
   },
@@ -79,7 +79,7 @@ export const rejectCoreLoan = mutation({
       throw new Error("Loan not found or does not belong to user");
     }
     await ctx.db.patch(userId, {
-      status: "done",
+      coreLoan: "no",
     });
     await ctx.db.delete(loanId);
   },
@@ -103,7 +103,7 @@ export const approveCoreLoan = mutation({
       throw new Error("Loan not found or does not belong to user");
     }
     await ctx.db.patch(userId, {
-      status: "done",
+      coreLoan: "yes",
     });
 
     await ctx.db.patch(loanId, {

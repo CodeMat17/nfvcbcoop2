@@ -10,7 +10,7 @@ export default defineSchema({
     pin: v.string(),
     ippis: v.string(),
     coreLoan: v.optional(v.union(v.literal("yes"), v.literal("no"))),
-    status: v.optional(v.union(v.literal("pending"), v.literal("done"))),
+ 
   })
     .index("by_pin", ["pin"])
     .index("by_name", ["name"]),
@@ -26,7 +26,7 @@ export default defineSchema({
       v.literal("processing"),
       v.literal("approved")
     ),
-    approvedBy: v.optional(v.string()), //
+    approvedBy: v.optional(v.string()), 
   })
     .index("by_userId", ["userId"])
     .index("by_status", ["status"])
